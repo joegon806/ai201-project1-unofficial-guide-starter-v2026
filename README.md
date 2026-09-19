@@ -87,30 +87,26 @@ cards only.
 
 ## Sample Answer
 
-<!-- One complete question and answer, pasted as text, with the source line
-     visible. Milestone 4. -->
+**Question:** "Where is the nearest full hospital?"
 
-**Question:**
+**Answer:** Based on `guide_accessibility.md`, the nearest full hospital is in Marchwood. However, according to the practical notes in `guide_thornby_wells.md`, `guide_kestrelford.md`, `guide_pellew_sands.md`, `guide_halden_bay.md`, `guide_givens_mill.md`, `guide_elder_ness.md`, and `guide_marchwood.md`, the nearest full hospital is in Brightwater.
 
-**Answer:**
-
-```
-```
+Sources retrieved: guide_accessibility.md, guide_elder_ness.md, guide_givens_mill.md, guide_halden_bay.md, guide_kestrelford.md, guide_marchwood.md, guide_pellew_sands.md, guide_thornby_wells.md
 
 **My relevance cutoff:**
 
-<!-- The number you set in config.py, and how you got there.
-
-     You ran five questions your corpus covers and the five in OUT_OF_SCOPE
-     that it clearly doesn't, and wrote down the best distance for each. What
-     did those two groups look like? Where was the gap? Put the actual numbers
-     here — the table below wants all ten rows.
-
-     Milestone 4. -->
-
 | Question | In corpus? | Best distance |
 |---|---|---|
-|  |  |  |
+| "Where is the nearest full hospital?" | Yes | 0.313 |
+| "Which month is excellent everywhere?" | Yes | 0.476 |
+| "Where does every railway line in the region meet?" | Yes | 0.476 |
+| "Which city has no public transport of any kind?" | Yes | 0.580 |
+| "What’s the main cuisine in Halden Bay?" | Yes | 0.317 |
+| "What is the capital of Mongolia?" | No | 0.754 |
+| "How do I change the oil in a diesel engine?" | No | 0.892 |
+| "Who won the 1994 World Cup?" | No | 0.899 |
+| "What is the recommended dosage of ibuprofen for a headache?" | No | 0.846 |
+| "How do I write a for loop in Rust?" | No | 0.813 |
 
 ## How I Used AI
 
