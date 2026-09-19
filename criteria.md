@@ -23,8 +23,7 @@ For at least 4 of my 5 test questions, the retrieved chunks include one that
 contains the answer.
 
 **Why this target:**
-<!-- e.g. "One of my questions is about a topic only two documents mention, so
-     I expect that one to be hard." -->
+4 of the 5 of the questions use close wording to the sentence from which the answer was extracted. The fifth question, "What's the main cuisine in Halden Bay?", does not use close wording, so the system might struggle with that one.
 
 ---
 
@@ -33,8 +32,7 @@ contains the answer.
 Every answer the system produces names at least one source document.
 
 **Why this target:**
-<!-- Why all five and not four? What about your setup makes that achievable —
-     or what would have to go wrong for it not to be? -->
+Every question asks about a sentence that is specifically and clearly stated in the documents. Every answer has at least one source document that can be cited.
 
 ---
 
@@ -50,47 +48,27 @@ in at least 4 of 5 tries.
      just keep five of them, or the "4 of 5" above has nothing to be 4 of. -->
 
 **Why this target:**
+A good system should not make up an answer if it does not have the information to actually form one.
 <!-- What did your distances look like when you set the cutoff in Milestone 4?
      Was there a clean gap, or did the two groups overlap? -->
 
 ---
 
-## 4. Something about your chunks
-
-<!-- YOU WRITE THIS ONE.
-
-     How would you know if your chunks were the right size? Name something
-     countable or observable.
-
-     Examples of the right shape — don't copy these, they should come from
-     what you actually saw in Milestone 3:
-       - "At least 4 of 5 sampled chunks read as a complete thought, with no
-          sentence cut in half at either end."
-       - "No chunk is shorter than 200 characters, since anything below that
-          in my corpus turned out to be a heading with no content under it." -->
-
-
+## 4. A chunk is a section of a document
+A chunk consists of a section header and the paragraph(s) that immediately follow.
 
 **Why this target:**
+The documents in city_guides are uniformly formatted so that paragraphs that pertain to one general thought are sectioned under a header. This is a good basis for how the system will split the text into chunks.
 
 
 
 ---
 
-## 5. Your choice
-
-<!-- YOU WRITE THIS ONE TOO.
-
-     Pick something you actually care about getting right. It could be about
-     speed, about refusals, about a particular kind of question your corpus
-     handles badly, about source attribution being correct rather than merely
-     present — anything, as long as it names a number or an observable
-     outcome. -->
-
-
+## 5. The system explains its answers
+If the system gives an answer, the system writes at least one full sentence explaining or expanding its answer, reiterating information from the source chunk(s) named.
 
 **Why this target:**
-
+Writing at least one sentence gives support to the system’s answer.
 
 
 ---
