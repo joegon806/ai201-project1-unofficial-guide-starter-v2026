@@ -64,11 +64,11 @@ The documents in city_guides are uniformly formatted so that paragraphs that per
 
 ---
 
-## 5. The system explains its answers
-If the system gives an answer, the system writes at least one full sentence explaining or expanding its answer, reiterating information from the source chunk(s) named.
+## 5. Each answer is accompanied with a direct quote
+If the system gives an answer, the system supports its answer with at least one quote from the source chunk(s) named which contains the appropriate information.
 
 **Why this target:**
-Writing at least one sentence gives support to the system’s answer.
+Giving a direct quote gives support to the system’s answer and shows exactly where it got the answer from.
 
 
 ---
