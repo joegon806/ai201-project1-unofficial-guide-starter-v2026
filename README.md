@@ -21,11 +21,7 @@ Joseph Gonzales; corpus: city_guides
 
 ## What This Does
 
-<!-- Three or four sentences. Which corpus you picked, and the kinds of
-     questions your system answers. Write it for someone who has never seen
-     this repo.
-
-     Milestone 5. -->
+This system searches through city guide documents so it can answer your questions about them. It can answer questions about aspects of a city, such as food, transport, or attractions, as well as questions about the cities in general, such as good seasons or the best places to visit overall. The system will answer your question to the best of its ability and cite the document from which it got its information.
 
 ## Chunking Strategy
 
@@ -89,7 +85,7 @@ cards only.
 
 **Question:** "Where is the nearest full hospital?"
 
-**Answer:** Based on `guide_accessibility.md`, the nearest full hospital is in Marchwood. However, according to the practical notes in `guide_thornby_wells.md`, `guide_kestrelford.md`, `guide_pellew_sands.md`, `guide_halden_bay.md`, `guide_givens_mill.md`, `guide_elder_ness.md`, and `guide_marchwood.md`, the nearest full hospital is in Brightwater.
+**Answer:** According to `guide_accessibility.md`, the nearest full hospital is in Marchwood. However, the other guides (`guide_thornby_wells.md`, `guide_kestrelford.md`, `guide_pellew_sands.md`, `guide_halden_bay.md`, `guide_givens_mill.md`, `guide_elder_ness.md`, and `guide_marchwood.md`) state that the nearest full hospital is in Brightwater.
 
 Sources retrieved: guide_accessibility.md, guide_elder_ness.md, guide_givens_mill.md, guide_halden_bay.md, guide_kestrelford.md, guide_marchwood.md, guide_pellew_sands.md, guide_thornby_wells.md
 
@@ -110,18 +106,11 @@ Sources retrieved: guide_accessibility.md, guide_elder_ness.md, guide_givens_mil
 
 ## How I Used AI
 
-<!-- Two specific moments. For each: what you asked for, what came back, and
-     what you changed about it.
-
-     "I asked Claude to write the chunking function from my notes. It ignored
-     the overlap, so I added that myself" is the level of detail we're after.
-     "I used AI to help me code" is not.
-
-     Milestone 5. -->
-
 **1.**
+After I wrote the last two acceptance criteria, I asked Claude to tell me how it would test them. Claude responded with clear test instructions, flagging conditions, and pass conditions, showing me that my criteria are clear and testable.
 
 **2.**
+Additionally, after I wrote my own code for the new chunker function, I asked Claude if there is a more efficient way to write it. In response, Claude rewrote my chunker code to fix bugs I had overlooked and to use a more efficient algorithm. 
 
 <!-- ── Stretch features ─────────────────────────────────────────────────────
      Doing one? Say so here BEFORE you start. A feature this README never
