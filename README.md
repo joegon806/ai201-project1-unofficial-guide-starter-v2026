@@ -29,7 +29,7 @@ This system searches through city guide documents so it can answer your question
 
 **Overlap:** None
 
-The documents in city_guides are uniformly structured such that each section pertains to a single topic and is started with a markdown header. This makes the sections perfect to be turned into chunks.
+The documents in city_guides are uniformly structured such that each section pertains to a single topic and is started with a markdown header. This makes the sections perfect to be turned into chunks, with each chunk pertaining to a single topic and distinguished by headers.
 
 ## Sample Chunks
 
@@ -89,7 +89,7 @@ cards only.
 
 Sources retrieved: guide_accessibility.md, guide_elder_ness.md, guide_givens_mill.md, guide_halden_bay.md, guide_kestrelford.md, guide_marchwood.md, guide_pellew_sands.md, guide_thornby_wells.md
 
-**My relevance cutoff:**
+**My relevance cutoff:** 0.7
 
 | Question | In corpus? | Best distance |
 |---|---|---|
