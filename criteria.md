@@ -23,7 +23,7 @@ For at least 4 of my 5 test questions, the retrieved chunks include one that
 contains the answer.
 
 **Why this target:**
-4 of the 5 of the questions use close wording to the sentence from which the answer was extracted. The fifth question, "What's the main cuisine in Halden Bay?", does not use close wording, so the system might struggle with that one.
+In order to produce accurate answers, the system must be able to accurately find chunks that are close in distance to the question. The fifth question, "What's the main cuisine in Halden Bay?", however, does not use the same wording as the sentence that its answer comes from, so the system's distance AI might struggle to match the question to the chunk.
 
 ---
 
@@ -32,7 +32,7 @@ contains the answer.
 Every answer the system produces names at least one source document.
 
 **Why this target:**
-Every question asks about a sentence that is specifically and clearly stated in the documents. Every answer has at least one source document that can be cited.
+The system should cite a source document every time it presents an answer so the user knows what document the system got its information from and can verify that the information actually is in the document cited. Every test question asks about a sentence that is specifically and clearly stated in the documents, so the system should be able to cite at least one source document for every test answer.
 
 ---
 
@@ -40,7 +40,7 @@ Every question asks about a sentence that is specifically and clearly stated in 
 
 When I ask a question my documents clearly don't cover, the relevance gate
 stops it and the system returns "I don't have enough information about that" —
-in at least 4 of 5 tries.
+in all 5 tries.
 
 <!-- The five questions are the ones in `OUT_OF_SCOPE` at the bottom of
      `questions.py`, and `run_eval.py` puts them through the gate and writes
@@ -48,9 +48,7 @@ in at least 4 of 5 tries.
      just keep five of them, or the "4 of 5" above has nothing to be 4 of. -->
 
 **Why this target:**
-A good system should not make up an answer if it does not have the information to actually form one.
-<!-- What did your distances look like when you set the cutoff in Milestone 4?
-     Was there a clean gap, or did the two groups overlap? -->
+This prevents the system from giving inaccurate or hallucinated information to the user if the system does not have enough information from the documents to give an accurate answer based on them.
 
 ---
 
@@ -68,7 +66,7 @@ The documents in city_guides are uniformly formatted so that paragraphs that per
 If the system gives an answer, the system supports its answer with at least one quote from the source chunk(s) named which contains the appropriate information.
 
 **Why this target:**
-Giving a direct quote gives support to the system’s answer and shows exactly where it got the answer from.
+Giving a direct quote gives support to the system’s answer and shows exactly what sentence or phrase it got the answer from.
 
 
 ---
