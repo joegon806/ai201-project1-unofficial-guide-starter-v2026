@@ -139,15 +139,75 @@ Additionally, after I wrote my own code for the new chunker function, I asked Cl
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1. Retrieved chunk contains the answer | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 2. Every answer names a source | 5 of 5 | 4/4 | 4/4 | 4/4 | MET |
+| 3. Gate stops out-of-corpus questions | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 4. A chunk is a section of a document | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 5. Each answer is accompanied with a direct quote | 5 of 5 | 0 of 4 | 0 of 4 | 0 of 4 | MISSED |
 
 <!-- Underneath, paste the REAL output for each criterion from one of your
      runs — the actual text your system produced, not a description of it.
      Name the file and function that produced it. -->
+
+### Real Outputs:
+
+### Criterion 1. Retrieved chunk contains the answer
+File: chunker.py; Function: split_documents
+
+```
+Where is the nearest full hospital? — run 1
+...
+**[2] `guide_thornby_wells.md#7`** — distance 0.4339 (chunked by `chunker.py::split_documents`)
+
+## Practical notes
+
+Cash is still useful at the market and in smaller places, though cards are
+accepted almost everywhere now. Mobile coverage is good in the centre and
+patchy on the outskirts. The nearest full hospital is in Brightwater; there is
+a minor injuries unit locally with limited hours.
+```
+
+
+### Criterion 2. Every answer names a source
+File: generate.py; Function: answer_from_chunks
+
+```
+Based on `guide_accessibility.md`, the nearest full hospital is in Marchwood. (Note: The other documents state that the nearest full hospital is in Brightwater.)
+```
+
+### Criterion 3. Gate stops out-of-corpus questions
+File: app.py; Function: _ask_one
+```
+>python app.py ask "What's 2+2"                    
+(best distance 0.839, cutoff 0.7)
+
+I don't have enough information about that.
+```
+
+### Criterion 4. A chunk is a section of a document
+File: chunker.py; Function: split_documents
+
+```
+Where is the nearest full hospital? — run 1
+...
+**[2] `guide_thornby_wells.md#7`** — distance 0.4339 (chunked by `chunker.py::split_documents`)
+
+## Practical notes
+
+Cash is still useful at the market and in smaller places, though cards are
+accepted almost everywhere now. Mobile coverage is good in the centre and
+patchy on the outskirts. The nearest full hospital is in Brightwater; there is
+a minor injuries unit locally with limited hours.
+```
+
+### Criterion 5 (MISSED). Each answer is accompanied with a direct quote
+File: generate.py; Function: answer_from_chunks
+
+```
+Which city has no public transport of any kind? — run 2
+...
+Elder Ness has no public transport of any kind, according to `guide_elder_ness.md`.
+```
 
 ## Verdicts
 

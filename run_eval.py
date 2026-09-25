@@ -68,6 +68,31 @@ def run_once(question: str, top_k, threshold, corpus, variant):
     return answer, results, decision
 
 
+def squash(text: str, limit: int) -> str:
+    """One chunk on a handful of lines: newlines flattened, optionally cut short.
+
+    Chunks are a few hundred words of prose. Printed raw they bury the verdict
+    line you actually came for, so the default trims them — `--chunk-chars 0`
+    turns that off when you need to read the whole thing.
+    """
+    flat = " ".join(text.split())
+    if limit and len(flat) > limit:
+        # ASCII "..." on purpose: the Windows console is cp1252 here and a "…"
+        # comes out as a mojibake box.
+        return flat[:limit].rstrip() + " ..."
+    return flat
+
+
+def print_chunks(results, limit: int) -> None:
+    """Show what retrieval handed the model, nearest chunk first."""
+    if not results:
+        print("    (retrieval returned nothing)")
+        return
+    for rank, result in enumerate(results, 1):
+        print(f"    [{rank}] {result.label}  distance {result.distance:.3f}")
+        print(f"        {squash(result.text, limit)}")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Run the test questions and log the results.")
     parser.add_argument("--runs", type=int, default=3, help="runs per question (default 3)")
@@ -76,6 +101,17 @@ def main():
     parser.add_argument("--variant", default="default")
     parser.add_argument("--top-k", type=int, default=None)
     parser.add_argument("--threshold", type=float, default=None)
+    parser.add_argument(
+        "--show-chunks",
+        action="store_true",
+        help="print the retrieved chunks for every run as it happens",
+    )
+    parser.add_argument(
+        "--chunk-chars",
+        type=int,
+        default=300,
+        help="how much of each chunk to print (default 300; 0 for all of it)",
+    )
     args = parser.parse_args()
 
     corpus = args.corpus or config.CORPUS
@@ -118,12 +154,16 @@ def main():
             mark = {True: "pass", False: "fail", None: "—"}[passed]
             print(f"  run {run}: {mark}  (best distance {decision.best_distance:.3f})")
 
+            if args.show_chunks:
+                print_chunks(results, args.chunk_chars)
+
             transcript.append(
                 {
                     "question": question,
                     "run": run,
                     "answer": answer,
                     "sources": sorted({r.source for r in results}),
+                    "chunks": results,
                     "best_distance": decision.best_distance,
                     "gate_passed": decision.passed,
                 }
@@ -254,6 +294,27 @@ def write_report(rows, transcript, gate_rows, args, corpus, top_k, threshold, sc
             f"- Best distance: {entry['best_distance']:.4f} "
             f"({'passed' if entry['gate_passed'] else 'refused by'} the gate)",
             f"- Sources retrieved: {', '.join(entry['sources']) or 'none'}",
+            "",
+            "<details><summary>Retrieved chunks</summary>",
+            "",
+        ]
+
+        if entry["chunks"]:
+            for rank, chunk in enumerate(entry["chunks"], 1):
+                lines += [
+                    f"**[{rank}] `{chunk.label}`** — distance {chunk.distance:.4f} "
+                    f"(chunked by `{chunk.produced_by}`)",
+                    "",
+                    "```",
+                    chunk.text,
+                    "```",
+                    "",
+                ]
+        else:
+            lines += ["Retrieval returned nothing.", ""]
+
+        lines += [
+            "</details>",
             "",
             "```",
             entry["answer"],
