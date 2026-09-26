@@ -223,14 +223,14 @@ Elder Ness has no public transport of any kind, according to `guide_elder_ness.m
 | # | Criterion | Verdict | How I decided |
 |---|---|---|---|
 | 1 | Retrieved chunk contains the answer. | MET | For each of the questions, at least one of the chunks retrieved does include the correct answer. Unless you disqualify Question 3 ("every railway line"), whose chunks did not include the sentence that directly answers the question, and instead includes a sentence that indirectly answers the question.
-| REVISED-1 | For at least 4 of 5 questions, at least one of the top three retrieved chunks contain the answer. | MISSED | Question 4 ("no public transport")'s answer, while correct, is found in the top 8th chunk, not in the top 3. Additionally, the top 3 chunks of Question 3 ("every railway line"), which did not yield an answer, do not contain the sentence that directly answers the question (although, the very top chunk does indirectly reference the correct answer).
+| 1-REVISED | For at least 4 of 5 questions, at least one of the top three retrieved chunks contain the answer. | MISSED | Question 4 ("no public transport")'s answer, while correct, is found in the top 8th chunk, not in the top 3. Additionally, the top 3 chunks of Question 3 ("every railway line"), which did not yield an answer, do not contain the sentence that directly answers the question (although, the very top chunk does indirectly reference the correct answer).
 | 2 | Every answer names a source. | MET | All of the answers directly name which document(s) it got its answer info from, because this functionality is baked into the answer-generation prompt.
 | 3 | Gate stops out-of-corpus questions. | MET | All of the out-of-corpus questions yielded high distance, did not call the model, and responded with the refusal statement.
 | NEW | Gate does not stop in-corpus questions. | MISSED | This new criterion is inspired by Criterion 3. Missed because the system failed to answer Question 3 ("every railway line").
 | 4 | A chunk is a section of a document. | MET | Every chunk retrieved follows the header-and-paragraphs structure designed in split_documents in chunker.py.
-| REVISED-4 | A chunk contains useful information. | MISSED | This revision of Criterion 4 aims to address the effect of the chunk rather than its design. Missed because some chunks are only a header with no paragraph.
-| REVISED-4 | A chunk only contains one fact of information. | MISSED | Directly inspired by the failure of Question 3 ("every railway line"), and also builds off of Criterion 4. Question 3 failed because the direct answer to the question was contained as a small sentence in a larger chunk, such that the rest of the chunk was irrelevant and lowered the distance score.
-| 5 | Each answer is accompanied with a direct quote. | MISSED | None of the answers provide a direct quote, because neither the answer-generation prompt nor the code have functionality implemented for direct quotes.
+| 4-REVISED (a) | A chunk contains useful information. | MISSED | This revision of Criterion 4 aims to address the effect of the chunk rather than its design. Missed because some chunks are only a header with no paragraphs.
+| 4-REVISED (b) | A chunk only contains one fact of information. | MISSED | Many chunks have multiple sentences with multiple topics, which affects the chunk's distance. This criterion also builds off of Criterion 4. 
+| 5 | Each answer is accompanied with a direct quote. | MISSED | None of the answers provide a direct quote.
 
 ## Diagnoses
 
@@ -251,6 +251,31 @@ Elder Ness has no public transport of any kind, according to `guide_elder_ness.m
      low, and which one you'd tighten and to what.
 
      Milestone 3. -->
+
+**Criterion 1-REVISED: For at least 4 of 5 questions, at least one of the top three retrieved chunks contain the answer.**
+Diagnosis: For both Question 3 ("every railway line") and Question 4 ("no public transport"), the chunk with the answer contained other irrelevant sentences, which increased the chunk's distance to the question. This issue is related to Criterion 4-REVISED (b).
+STAGE: chunking; Mechanism: split_documents
+
+**Criterion NEW: Gate does not stop in-corpus questions.**
+Diagnosis: The system failed to answer Question 3 ("every railway line") because the chunk with the answer contained other irrelevant sentences, which increased the chunk's distance to the question, and prevented the system from seeing it as useful information for the answer. This issue is related to Criterion 1-REVISED and Criterion 4-REVISED (b).
+STAGE: chunking; Mechanism: split_documents
+
+**Criterion 4-REVISED (a): A chunk contains useful information.**
+Diagnosis: Some chunks consist of only a header because the chunker creates chunks that consist of a header and the following paragraphs, including creating a chunk if there are no paragraphs following the header.
+STAGE: chunking; Mechanism: split_documents
+
+**Criterion 4-REVISED (b): A chunk only contains one fact of information.**
+Diagnosis: The chunker splits the documents into sections distinguished as a header and the following paragraphs, with no regard to multiple topics contained in a section. This criterion is directly inspired by the failure of Question 3 ("every railway line"), which failed because the direct answer to the question was contained as a small sentence in a larger chunk, such that the rest of the chunk was irrelevant and increase the distance score.
+STAGE: chunking; Mechanism: split_documents
+
+**Criterion 5: Each answer is accompanied with a direct quote.**
+Diagnosis: The prompt in the Generation stage does not say to include a direct quote in the answers.
+Stage: generation; Mechanism: build_prompt
+
+**Pattern:** Most issues are related to Criterion 4-REVISED (b): A chunk only contains one fact of information. 
+When a large chunk contains more than one topic, this increase the chunk's distance to the question. This prevents the system from giving such a chunk a high ranking and seeing it as relevant information for the question. This in turn makes the system give an unsure answer or no answer at all.
+
+An alternative solution, however, would be to change the Embedding stage, so that it doesn't increase distance if a chunk contains irrelevant topics alongside a relevant topic. This would somewhat defeat the purpose of chunking, though.
 
 ## The Improvement
 
