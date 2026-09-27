@@ -228,7 +228,7 @@ Elder Ness has no public transport of any kind, according to `guide_elder_ness.m
 | 3 | Gate stops out-of-corpus questions. | MET | All of the out-of-corpus questions yielded high distance, did not call the model, and responded with the refusal statement.
 | NEW | Gate does not stop in-corpus questions. | MISSED | This new criterion is inspired by Criterion 3. Missed because the system failed to answer Question 3 ("every railway line").
 | 4 | A chunk is a section of a document. | MET | Every chunk retrieved follows the header-and-paragraphs structure designed in split_documents in chunker.py.
-| 4-REVISED (a) | A chunk contains useful information. | MISSED | This revision of Criterion 4 aims to address the effect of the chunk rather than its design. Missed because some chunks are only a header with no paragraphs.
+| 4-REVISED (a) | Every retrieved chunk can be understood without reading any other chunk. | MISSED | This revision of Criterion 4 aims to address the effect of the chunk rather than its design. Missed because some chunks are only a header with no paragraphs, so on their own they state nothing to understand.
 | 4-REVISED (b) | A chunk only contains one fact of information. | MISSED | Many chunks have multiple sentences with multiple topics, which affects the chunk's distance. This criterion also builds off of Criterion 4. 
 | 5 | Each answer is accompanied with a direct quote. | MISSED | None of the answers provide a direct quote.
 
@@ -260,8 +260,8 @@ STAGE: chunking; Mechanism: split_documents
 Diagnosis: The system failed to answer Question 3 ("every railway line") because the chunk with the answer contained other irrelevant sentences, which increased the chunk's distance to the question, and prevented the system from seeing it as useful information for the answer. This issue is related to Criterion 1-REVISED and Criterion 4-REVISED (b).
 STAGE: chunking; Mechanism: split_documents
 
-**Criterion 4-REVISED (a): A chunk contains useful information.**
-Diagnosis: Some chunks consist of only a header because the chunker creates chunks that consist of a header and the following paragraphs, including creating a chunk if there are no paragraphs following the header.
+**Criterion 4-REVISED (a): Every retrieved chunk can be understood without reading any other chunk.**
+Diagnosis: Some chunks consist of only a header because the chunker creates chunks that consist of a header and the following paragraphs, including creating a chunk if there are no paragraphs following the header. A header alone makes no statement, so the reader has to go to the next chunk to get anything out of it.
 STAGE: chunking; Mechanism: split_documents
 
 **Criterion 4-REVISED (b): A chunk only contains one fact of information.**
@@ -300,7 +300,7 @@ As per the diagnosis of Criterion 4-REVISED (b), some old chunks had multiple se
 | 2. Every answer names a source. | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
 | 3. Gate stops out-of-corpus questions. | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
 | NEW. Gate does not stop in-corpus questions. | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
-| 4-REVISED (a). A chunk contains useful information. | 5 of 5 | 4/5 | 4/5 | 4/5 | MISSED |
+| 4-REVISED (a). Every retrieved chunk can be understood without reading any other chunk. | 5 of 5 | 4/5 | 4/5 | 4/5 | MISSED |
 | 4-REVISED (b). A chunk only contains one fact of information. | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
 | 5. Each answer is accompanied with a direct quote. | 5 of 5 | 0/5 | 0/5 | 0/5 | MISSED |
 
@@ -314,7 +314,7 @@ As per the diagnosis of Criterion 4-REVISED (b), some old chunks had multiple se
 
      Milestone 4. -->
 
-The chunk redesign did help. Nearly every chunk has contains only one sentence of useful information, which produced lower distances on correct chunks. This made the system answer Question 3 ("every railway line") correctly, as well as answer Question 5 ("main cuisine in Halden Bay") with more confidence. The drawback is that occasionally, a chunk will consist of a single sentence that depends on the context of its previous sentence, such as “There is no transport within the town” from guide_accessibility.md#18, which does not mention which town it is referring to. (This chunk was retrieved for Question 4 ("no public transport"), and it is why Criterion 4-REVISED (a) ("useful information") misses one question on every run.) Additionally, while the redesign improved the distance of the chunk containing the correct answer for Question 4 ("no public transport"), the improvement was not enough to bring the chunk up to the top 3 rank, which is why Criterion 1-REVISED ("one of the top three retrieved chunks contain the answer") misses one question on every run.
+The chunk redesign did help. Nearly every chunk now contains a single sentence that stands on its own, which produced lower distances on correct chunks. This made the system answer Question 3 ("every railway line") correctly, as well as answer Question 5 ("main cuisine in Halden Bay") with more confidence. The drawback is that occasionally, a chunk will consist of a single sentence that depends on the context of its previous sentence, such as “There is no transport within the town” from guide_accessibility.md#18, which does not mention which town it is referring to. (This chunk was retrieved for Question 4 ("no public transport"), and it is why Criterion 4-REVISED (a) ("understood without reading any other chunk") misses one question on every run.) Additionally, while the redesign improved the distance of the chunk containing the correct answer for Question 4 ("no public transport"), the improvement was not enough to bring the chunk up to the top 3 rank, which is why Criterion 1-REVISED ("one of the top three retrieved chunks contain the answer") misses one question on every run.
 
 ## What's Still Broken
 
@@ -326,9 +326,18 @@ The chunk redesign did help. Nearly every chunk has contains only one sentence o
 
      Milestone 5. -->
 
+**Criterion 4-REVISED (a). Every retrieved chunk can be understood without reading any other chunk.**
+The chunks are redesigned to contain one sentence instead of one section, which mostly succeeds in this Criterion because most sentences are self-contained on their own. The redesign is also implemented such that no chunk can include nothing but a single header, which is in line with the criterion. However, now there is the possibility of chunks containing single sentences whose referents live in a neighboring sentence, such as the aforementioned “There is no transport within the town”. I stopped where I did because such sentences are outliers, and the system is able to answer all five test questions even with outlier chunks and the new chunk design implemented. I also could not think of a better chunk design that would be able to delete these outlier sentences or merge them into other chunks while still keeping the other chunks of high quality.
+
+**Criterion 5. Each answer is accompanied with a direct quote.**
+The generation prompt still does not instruct the model to provide a direct quote with each answer. I did not work on fixing this, because Milestone 4 instructed me to work on only one fix, and instead I worked on the more permeating chunk issue.
+
+
 ## What I'd Do Differently
 
 <!-- Knowing what you know now — which of your five criteria would you write
      differently, and why?
 
      Milestone 5. -->
+
+I would write Criterion 2 ("Every answer names a source") and Criterion 5 ("Each answer is accompanied with a direct quote") to focus less on the direct implementation of a mechanism and focus more on the effect of a mechanism. I revised Criterion 4 ("A chunk is a section of a document") into two different Criterion along this idea. 
