@@ -27,6 +27,15 @@ In order to produce accurate answers, the system must be able to accurately find
 
 ---
 
+## 1-REVISED. At least one of the top three retrieved chunks contain the answer.
+
+For at least 4 of 5 questions, at least one of the top three retrieved chunks contain the sentence that contains the direct answer to the question.
+
+**Why this target:**
+In order to produce accurate answers, the system must be able to accurately find chunks that actually contain the answer. The fifth question, "What's the main cuisine in Halden Bay?", however, does not use the same wording as the sentence that its answer comes from, so the system's distance AI might struggle to match the question to the chunk.
+
+---
+
 ## 2. Every answer names a source
 
 Every answer the system produces names at least one source document.
@@ -52,13 +61,38 @@ This prevents the system from giving inaccurate or hallucinated information to t
 
 ---
 
+## 3 (b). The relevance gate does not stop in-corpus questions.
+
+When I ask a question my documents clearly do cover, the relevance gate gives an answer to it- in all 5 tries.
+
+**Why this target:**
+This makes sure the system is responsive to questions it should be capable of answering.
+
+---
+
 ## 4. A chunk is a section of a document
 A chunk consists of a section header and the paragraph(s) that immediately follow.
 
 **Why this target:**
 The documents in city_guides are uniformly formatted so that paragraphs that pertain to one general thought are sectioned under a header. This is a good basis for how the system will split the text into chunks.
 
+--- 
 
+## 4-REVISED (a). Every retrieved chunk can be understood without reading any other chunk.
+
+If a chunk, on its own, cannot be understood or cannot answer a question without reference to another chunk, then it should not be a chunk on its own.
+
+**Why this target:**
+A chunk that cannot be understood on its own is not very useful, as the system may have trouble knowing which other chunks should go together with it to understand its information, and would otherwise have no information to extract from it.
+
+---
+
+## 4-REVISED (b). A chunk only contains one fact of information.
+
+A chunk does not contain no information or multiple facts of information; it has one fact alone.
+
+**Why this target:**
+A chunk with no information has no value to the system. A chunk with multiple facts of information makes the chunk have a high distance from a topic that the chunk is actually relevant for.
 
 ---
 

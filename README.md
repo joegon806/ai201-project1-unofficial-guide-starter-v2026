@@ -234,7 +234,7 @@ Elder Ness has no public transport of any kind, according to `guide_elder_ness.m
 | 1-REVISED | For at least 4 of 5 questions, at least one of the top three retrieved chunks contain the answer. | MISSED | Question 4 ("no public transport")'s answer, while correct, is found in the top 8th chunk, not in the top 3. Additionally, the top 3 chunks of Question 3 ("every railway line"), which did not yield an answer, do not contain the sentence that directly answers the question (although, the very top chunk does indirectly reference the correct answer).
 | 2 | Every answer names a source. | MET | All of the answers directly name which document(s) it got its answer info from, because this functionality is baked into the answer-generation prompt.
 | 3 | Gate stops out-of-corpus questions. | MET | All of the out-of-corpus questions yielded high distance, did not call the model, and responded with the refusal statement.
-| NEW | Gate does not stop in-corpus questions. | MISSED | This new criterion is inspired by Criterion 3. Missed because the system failed to answer Question 3 ("every railway line").
+| 3 (b) (new) | Gate does not stop in-corpus questions. | MISSED | This new criterion is inspired by Criterion 3. Missed because the system failed to answer Question 3 ("every railway line").
 | 4 | A chunk is a section of a document. | MET | Every chunk retrieved follows the header-and-paragraphs structure designed in split_documents in chunker.py.
 | 4-REVISED (a) | Every retrieved chunk can be understood without reading any other chunk. | MISSED | This revision of Criterion 4 aims to address the effect of the chunk rather than its design. Missed because some chunks are only a header with no paragraphs, so on their own they state nothing to understand.
 | 4-REVISED (b) | A chunk only contains one fact of information. | MISSED | Many chunks have multiple sentences with multiple topics, which affects the chunk's distance. This criterion also builds off of Criterion 4. 
@@ -264,7 +264,7 @@ Elder Ness has no public transport of any kind, according to `guide_elder_ness.m
 Diagnosis: For both Question 3 ("every railway line") and Question 4 ("no public transport"), the chunk with the answer contained other irrelevant sentences, which increased the chunk's distance to the question. This issue is related to Criterion 4-REVISED (b).
 STAGE: chunking; Mechanism: split_documents
 
-**Criterion NEW: Gate does not stop in-corpus questions.**
+**Criterion 3 (b): Gate does not stop in-corpus questions.**
 Diagnosis: The system failed to answer Question 3 ("every railway line") because the chunk with the answer contained other irrelevant sentences, which increased the chunk's distance to the question, and prevented the system from seeing it as useful information for the answer. This issue is related to Criterion 1-REVISED and Criterion 4-REVISED (b).
 STAGE: chunking; Mechanism: split_documents
 
@@ -307,7 +307,7 @@ As per the diagnosis of Criterion 4-REVISED (b), some old chunks had multiple se
 | 1-REVISED. For at least 4 of 5 questions, at least one of the top three retrieved chunks contain the answer. | 4 of 5 | 4/5 | 4/5 | 4/5 | MET |
 | 2. Every answer names a source. | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
 | 3. Gate stops out-of-corpus questions. | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
-| NEW. Gate does not stop in-corpus questions. | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 3 (b). Gate does not stop in-corpus questions. | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
 | 4-REVISED (a). Every retrieved chunk can be understood without reading any other chunk. | 5 of 5 | 4/5 | 4/5 | 4/5 | MISSED |
 | 4-REVISED (b). A chunk only contains one fact of information. | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
 | 5. Each answer is accompanied with a direct quote. | 5 of 5 | 0/5 | 0/5 | 0/5 | MISSED |
