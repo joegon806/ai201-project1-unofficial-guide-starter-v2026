@@ -22,10 +22,17 @@ to it, write down what you saw, and move on. That's a real observation about
 your pipeline, not giving up.
 """
 
+import re
 from dataclasses import dataclass
+from pathlib import Path
 
 import config
 from ingest import Document
+
+# Splits a paragraph after '.', '!' or '?' when whitespace follows. The corpus is
+# plain prose with no abbreviations ("e.g.", "Dr.") to trip it up, so this is
+# good enough here — it would need more care on messier text.
+SENTENCE_END = re.compile(r"(?<=[.!?])\s+")
 
 
 @dataclass
@@ -80,27 +87,32 @@ def fallback_split(
     return chunks
 
 
+def source_name(source: str) -> str:
+    """'guide_halden_bay.md' -> 'halden bay'. The 'guide_' prefix says nothing."""
+    return Path(source).stem.removeprefix("guide_").replace("_", " ")
+
+
 def split_documents(documents: list[Document]) -> list[Chunk]:
     """
-    Split documents into chunks. ⚠️ REPLACE THE BODY OF THIS IN MILESTONE 3.
+    One sentence per chunk, prefixed with where that sentence came from.
 
-    Right now it just calls the fallback. That is the plain, generic behaviour
-    the brief is talking about.
+    Every chunk reads "<place>, <section>: <sentence>" — for example
+    "halden bay, Eat and drink: Everything closes by 9pm...". The corpus is a
+    set of guides that all use the same headings, so a bare sentence like
+    "Buses run four times a day" is useless on its own: nothing in it says which
+    town it describes. Folding the filename and the heading into the chunk text
+    puts that context where the embedding can see it, not just in the citation.
 
-    When you write your own strategy, set `produced_by` to
-    "chunker.py::split_documents" so your README's Sample Chunks section names
-    the right function. `app.py chunks` prints that string for you.
-
-    Things worth thinking about before you write any code:
-      - Are your documents short posts or long guides?
-      - Is the useful information in one sentence, or spread over a paragraph?
-      - Would splitting on paragraph breaks keep more thoughts intact than
-        splitting on a character count?
+    Splitting per sentence rather than per section keeps each chunk to roughly
+    one fact, so a question about parking doesn't have to match a paragraph that
+    is mostly about restaurants.
     """
     chunks: list[Chunk] = []
 
     for doc in documents:
-        # Group the document's lines into sections. 
+        name = source_name(doc.source)
+
+        # Group the document's lines into sections.
         # A line that starts with '#' is a Markdown heading, so it opens a new section.
         # Anything before the first heading gets a section of its own.
         sections: list[list[str]] = []
@@ -109,20 +121,31 @@ def split_documents(documents: list[Document]) -> list[Chunk]:
                 sections.append([])                     # create a new section
             sections[-1].append(line)                   # append the line to the section
 
-        # then turn the sections into Chunks
+        # then turn each sentence of each section into a Chunk
         index = 0
         for section in sections:
-            text = "\n".join(section).strip()
-            if text:
-                chunks.append(
-                    Chunk(
-                        text=text,
-                        source=doc.source,
-                        index=index,
-                        produced_by="chunker.py::split_documents",
+            header = section[0].lstrip("#").strip() if section[0].startswith("#") else ""
+
+            # Join the body onto one line first — paragraphs wrap mid-sentence,
+            # so a single sentence can span two lines.
+            body = " ".join(line.strip() for line in section[1:] if line.strip())
+
+            # The top heading repeats the place name ("# Halden Bay"), so in that
+            # one section the header adds nothing.
+            prefix = f"{name}, {header}" if header and header.lower() != name else name
+
+            for sentence in SENTENCE_END.split(body):
+                sentence = sentence.strip()
+                if sentence:
+                    chunks.append(
+                        Chunk(
+                            text=f"{prefix}: {sentence}",
+                            source=doc.source,
+                            index=index,
+                            produced_by="chunker.py::split_documents",
+                        )
                     )
-                )
-                index += 1
+                    index += 1
 
     return chunks
 

@@ -280,8 +280,11 @@ An alternative solution, however, would be to change the Embedding stage, so tha
 ## The Improvement
 
 **What I changed:**
+I changed the chunk design from "section header + section paragraphs" to "file name (minus ‘guide_’), section header: one sentence of the section", where each sentence is its own chunk.
+I used Claude Code to write this new chunker.
 
 **Why I picked it:**
+As per the diagnosis of Criterion 4-REVISED (b), some old chunks had multiple sentences with multiple topics, degrading the chunk's distance to questions. If the chunks are redesigned to be individual sentences, the chunks might be better focused to have only one topic each.
 
 <!-- Connect it to a specific diagnosis above in one sentence. If you can't,
      you picked a fix because it sounded impressive. -->
@@ -293,11 +296,14 @@ An alternative solution, however, would be to change the Embedding stage, so tha
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1-REVISED. For at least 4 of 5 questions, at least one of the top three retrieved chunks contain the answer. | 4 of 5 | 4/5 | 4/5 | 4/5 | MET |
+| 2. Every answer names a source. | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 3. Gate stops out-of-corpus questions. | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| NEW. Gate does not stop in-corpus questions. | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 4-REVISED (a). A chunk contains useful information. | 5 of 5 | 4/5 | 4/5 | 4/5 | MISSED |
+| 4-REVISED (b). A chunk only contains one fact of information. | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 5. Each answer is accompanied with a direct quote. | 5 of 5 | 0/5 | 0/5 | 0/5 | MISSED |
+
 
 **Did it help?**
 
@@ -307,6 +313,8 @@ An alternative solution, however, would be to change the Embedding stage, so tha
      tell.
 
      Milestone 4. -->
+
+The chunk redesign did help. Nearly every chunk has contains only one sentence of useful information, which produced lower distances on correct chunks. This made the system answer Question 3 ("every railway line") correctly, as well as answer Question 5 ("main cuisine in Halden Bay") with more confidence. The drawback is that occasionally, a chunk will consist of a single sentence that depends on the context of its previous sentence, such as “There is no transport within the town” from guide_accessibility.md#18, which does not mention which town it is referring to. (This chunk was retrieved for Question 4 ("no public transport"), and it is why Criterion 4-REVISED (a) ("useful information") misses one question on every run.) Additionally, while the redesign improved the distance of the chunk containing the correct answer for Question 4 ("no public transport"), the improvement was not enough to bring the chunk up to the top 3 rank, which is why Criterion 1-REVISED ("one of the top three retrieved chunks contain the answer") misses one question on every run.
 
 ## What's Still Broken
 
