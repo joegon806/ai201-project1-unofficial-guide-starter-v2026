@@ -112,6 +112,14 @@ After I wrote the last two acceptance criteria, I asked Claude to tell me how it
 **2.**
 Additionally, after I wrote my own code for the new chunker function, I asked Claude if there is a more efficient way to write it. In response, Claude rewrote my chunker code to fix bugs I had overlooked and to use a more efficient algorithm. 
 
+**Unit 2**
+I used Claude Code for:
+- modifying the system to print out the chunks retrieved for a question when a question is asked or when run_eval is run.
+- explaining to me the five stages of the system (loading, chunking, embedding, retreival, generation) in simple terms
+- rewriting the chunker to change the design of the chunks to be only one sentence each
+- rewriting Criterion 4-REVISED (a) from "A chunk contains useful information" to the less subjective "Every retrieved chunk can be understood without reading any other chunk."
+
+
 <!-- ── Stretch features ─────────────────────────────────────────────────────
      Doing one? Say so here BEFORE you start. A feature this README never
      claims earns nothing.
